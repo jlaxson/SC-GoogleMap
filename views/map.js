@@ -10,16 +10,14 @@
 
   @extends SC.View
 */
+
 GMap.LatLng = function(lat, lng) {
+
   return new google.maps.LatLng(lat,lng);
 };
 
 GMap.MapView = SC.View.extend(
 /** @scope GMap.MapView.prototype */ {
-  MAP_ROADMAP:  google.maps.MapTypeId.ROADMAP,
-  MAP_SATELLITE:google.maps.MapTypeId.SATELLITE,
-  MAP_HYBRID:   google.maps.MapTypeId.HYBRID,
-  MAP_TERRAIN:  google.maps.MapTypeId.TERRAIN,
 
   classNames: 'gmap-mapview',
 
@@ -27,6 +25,8 @@ GMap.MapView = SC.View.extend(
   _mapLayer: null,
   center: GMap.LatLng(0,0),
   zoom: 1,
+  
+  
   
   render: function(context, firstTime) {
     this._mapLayer = context.begin('div').addClass('gmap-container');
@@ -42,7 +42,23 @@ GMap.MapView = SC.View.extend(
   centerObserver: function(key) {
     if (this._map) this._map.setCenter(this.get('center'));
   }.observes('center'),
-  mapType: google.maps.MapTypeId.ROADMAP,
+  
+  mapType: "MAP_ROADMAP",
+  googleMapType: function() {
+    var type = this.get('mapType');
+    if (type === GMap.MapView.MAP_ROADMAP)
+        return google.maps.MapTypeId.ROADMAP;
+    else if (type === GMap.MapView.MAP_SATELLITE)
+        return google.maps.MapTypeId.SATELLITE;
+    else if (type === GMap.MapView.MAP_HYBRID)
+        return google.maps.MapTypeId.HYBRID;
+    else if (type === GMap.MapView.MAP_TERRAIN)
+        return google.maps.MapTypeId.TERRAIN;
+    else {
+        console.error("unknown map type: " + this.get('mapType'));
+        return undefined;
+    }
+  }.property('mapType'),
   
   didCreateLayer: function() {
     this.invokeLater(function() { this.loadMap(); });
@@ -53,9 +69,10 @@ GMap.MapView = SC.View.extend(
     var layer = this.get('layer');
     var myOptions = {
         zoom: this.get('zoom'),
-        mapTypeId: this.get('mapType'),
+        mapTypeId: this.get('googleMapType'),
         disableDefaultUI: true,
     };
+    
     var elem = layer.firstChild;
     this._map = new google.maps.Map(elem, myOptions);
     this._map.setCenter(this.get('center'));
@@ -69,8 +86,7 @@ GMap.MapView = SC.View.extend(
   observeMarkers: function() {
     var oldmarkers = this._markers;
     var markers = this.get('markers');
-    //console.log(markers);
-    //console.log(oldmarkers);
+
     markers.forEach(function(marker) {
       marker._marker.setMap(this._map);
       marker.set('map', this);
@@ -84,4 +100,11 @@ GMap.MapView = SC.View.extend(
   }.observes('*markers.[]'),
 
 
+});
+
+SC.mixin(GMap.MapView, {
+  MAP_ROADMAP:  "MAP_ROADMAP",
+  MAP_SATELLITE:"MAP_SATELLITE",
+  MAP_HYBRID:   "MAP_HYBRID",
+  MAP_TERRAIN:  "MAP_TERRAIN",
 });
