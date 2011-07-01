@@ -11,28 +11,33 @@ GMapDemo.mainPage = SC.Page.design({
   // Add childViews to this pane for views to display immediately on page 
   // load.
   mainPane: SC.MainPane.design({
-    childViews: 'button'.w(),
+    childViews: 'map latLabel'.w(),
     
-    button: SC.ButtonView.design({
-      title: "Show Map",
-      action: function() {
-        var pane = SC.PanelPane.create({
-          layout: {width: 600, height: 600},
-          contentView: GMap.MapView.design({
-            layout: { left: 0, right: 0, top: 0, bottom: 0 },
-            _center: GMap.LatLng(0, 0),
-            _zoom: 10,
-            click: function() {
-              this.pane().remove();
-            }
-          })
-        });
-        pane.append();
-      },
-      
+    map: GMap.MapView.design({
+      layout: { left: 0, right: 0, top: 0, bottom: 0 },
+      center: GMap.LatLng(37.75, -122.45),
+      zoom: 10,
+      markers: [
+        GMap.Marker.create({ 
+          position: GMap.LatLng(37.75, -122.45), 
+          draggable: YES,
+          latitudeBinding: "GMapDemo.location.latitude",
+        }),
+      ]
+    }),
+    
+    latLabel: SC.LabelView.design({
+      layout: {left: 10, top: 10, width: 200, height: 30},
+      valueBinding: "GMapDemo.location.latitude",
+      backgroundColor: 'white',
     })
     
     
   })
 
+});
+
+GMapDemo.location = SC.Object.create({
+  latitude: 5,
+  longitude: 5
 });
