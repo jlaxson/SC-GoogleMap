@@ -11,14 +11,42 @@
   @extends SC.Record
   @version 0.1
 */
+
+GMap.Pins = SC.Object.create();
+
+GMap.Pins.DefaultPin = {
+  icon: new google.maps.MarkerImage(sc_static('Pin@2x.png'), new google.maps.Size(64, 78), new google.maps.Point(0,0), new google.maps.Point(7,34), new google.maps.Size(32, 39)),
+};
+
+GMap.Pins.Purple = {
+  icon: new google.maps.MarkerImage(sc_static('PinPurple@2x.png'), new google.maps.Size(64, 78), new google.maps.Point(0,0), new google.maps.Point(7,34), new google.maps.Size(32, 39)),
+};
+
+GMap.Pins.Green = {
+  icon: new google.maps.MarkerImage(sc_static('PinGreen@2x.png'), new google.maps.Size(64, 78), new google.maps.Point(0,0), new google.maps.Point(7, 34), new google.maps.Size(32, 39)),
+};
+
 GMap.Marker = SC.Object.extend(
 /** @scope GMap.Marker.prototype */ {
 
   _marker: null,
   map: null,
+
+  icon: GMap.Pins.DefaultPin.icon,
+  iconObserver: function() {
+    if(this._marker) {
+      this._marker.setIcon(this.get('icon'));
+    }
+  }.observes('icon'),
+
+  shadow: GMap.Pins.DefaultPin.shadow,
+  shadowObserver: function() {
+    if(this._marker) {
+      this._marker.setShadow(this.get('shadow'));
+    }
+  }.observes('shadow'),
   
   position: null,
-  icon: sc_static('pin.png'),
   title: '',
   positionObserver: function(key) {
     if (this._marker) {
@@ -30,7 +58,13 @@ GMap.Marker = SC.Object.extend(
   
   draggableObserver: function() {
     this._marker.setDraggable(this.get('draggable'));
-  },
+  }.observes('draggable'),
+
+  visible: YES,
+
+  visibleObserver: function() {
+    this._marker.setVisible(this.get('visible'));
+  }.observes('visible'),
   
   init: function() {
     var iconURL = this.get('icon');
@@ -38,7 +72,9 @@ GMap.Marker = SC.Object.extend(
     this._marker = new google.maps.Marker({
       position: this.get('position'),
       title: this.get('title'),
-      icon: new google.maps.MarkerImage(iconURL, new google.maps.Size(32, 39), new google.maps.Point(0,0), new google.maps.Point(7, 36)),
+      visible: this.get('visible'),
+      icon: this.get('icon'),
+      shadow: this.get('shadow'),
     });
     
     var that = this;

@@ -22,13 +22,14 @@ GMapDemo.mainPage = SC.Page.design({
           position: GMap.LatLng(37.75, -122.45), 
           draggable: YES,
           latitudeBinding: "GMapDemo.location.latitude",
+          longitudeBinding: "GMapDemo.location.longitude"
         }),
       ]
     }),
     
     latLabel: SC.LabelView.design({
       layout: {left: 10, top: 10, width: 200, height: 30},
-      valueBinding: "GMapDemo.location.latitude",
+      valueBinding: "GMapDemo.location.desc",
       backgroundColor: 'white',
     })
     
@@ -39,5 +40,8 @@ GMapDemo.mainPage = SC.Page.design({
 
 GMapDemo.location = SC.Object.create({
   latitude: 5,
-  longitude: 5
+  longitude: 5,
+  desc: function() {
+    return "%@, %@".fmt(this.get('latitude'), this.get('longitude'));
+  }.property('latitude', 'longitude'),
 });

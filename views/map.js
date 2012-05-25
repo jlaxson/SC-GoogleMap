@@ -23,10 +23,8 @@ GMap.MapView = SC.View.extend(
 
   _map: null,
   _mapLayer: null,
-  center: GMap.LatLng(0,0),
+  center: null,
   zoom: 1,
-  
-  
   
   render: function(context, firstTime) {
     this._mapLayer = context.begin('div').addClass('gmap-container');
@@ -35,6 +33,8 @@ GMap.MapView = SC.View.extend(
     
     sc_super();
   },
+
+  didCreateMap: function() {},
   
   zoomObserver: function(key) {
     if (this._map) this._map.setZoom(this.get('zoom'));
@@ -70,14 +70,16 @@ GMap.MapView = SC.View.extend(
     var myOptions = {
         zoom: this.get('zoom'),
         mapTypeId: this.get('googleMapType'),
-        disableDefaultUI: true,
+        //disableDefaultUI: true,
+        scrollwheel: false,
     };
     
     var elem = layer.firstChild;
     this._map = new google.maps.Map(elem, myOptions);
-    this._map.setCenter(this.get('center'));
+    this._map.setCenter(this.get('center') || GMap.LatLng(0, 0));
     
     this.observeMarkers();
+    this.didCreateMap();
   },
   
   _markers: [],
@@ -107,4 +109,5 @@ SC.mixin(GMap.MapView, {
   MAP_SATELLITE:"MAP_SATELLITE",
   MAP_HYBRID:   "MAP_HYBRID",
   MAP_TERRAIN:  "MAP_TERRAIN",
+  _gmapLoaded: false,
 });
