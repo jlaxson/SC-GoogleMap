@@ -31,6 +31,7 @@ GMap.Marker = SC.Object.extend(
 
   _marker: null,
   map: null,
+  action: function() {},
 
   markerOptions: {},
 
@@ -81,6 +82,7 @@ GMap.Marker = SC.Object.extend(
     
     var that = this;
     google.maps.event.addListener(this._marker, 'dragend', function() {that._markerDragged()});
+    google.maps.event.addListener(this._marker, 'click', function() {that._markerClicked()});
     
     sc_super();
     
@@ -90,6 +92,10 @@ GMap.Marker = SC.Object.extend(
   _markerDragged: function() {
     this.set('position', this._marker.getPosition())
     this.positionWasChanged();
+  },
+
+  _markerClicked: function() {
+    this.action(this);
   },
   
   positionWasChanged: function() {
