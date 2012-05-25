@@ -74,9 +74,11 @@ GMap.MapView = SC.View.extend(
         scrollwheel: false,
     };
     
-    var elem = layer.firstChild;
+    var elem = layer.firstChild, that = this;
     this._map = new google.maps.Map(elem, myOptions);
     this._map.setCenter(this.get('center') || GMap.LatLng(0, 0));
+
+    google.maps.event.addListener(this._map, 'center_changed', function() {that._centerChanged()});
     
     this.observeMarkers();
     this.didCreateMap();
@@ -84,6 +86,10 @@ GMap.MapView = SC.View.extend(
   
   _markers: [],
   markers: [],
+
+  _centerChanged: function() {
+    this.set('center', this._map.getCenter());
+  },
   
   observeMarkers: function() {
     var oldmarkers = this._markers;

@@ -32,6 +32,8 @@ GMap.Marker = SC.Object.extend(
   _marker: null,
   map: null,
 
+  markerOptions: {},
+
   icon: GMap.Pins.DefaultPin.icon,
   iconObserver: function() {
     if(this._marker) {
@@ -54,11 +56,11 @@ GMap.Marker = SC.Object.extend(
     }
   }.observes('position'),
   
-  draggable: NO,
+  isEditable: NO,
   
   draggableObserver: function() {
-    this._marker.setDraggable(this.get('draggable'));
-  }.observes('draggable'),
+    this._marker.setDraggable(this.get('isEditable'));
+  }.observes('isEditable'),
 
   visible: YES,
 
@@ -69,13 +71,13 @@ GMap.Marker = SC.Object.extend(
   init: function() {
     var iconURL = this.get('icon');
     
-    this._marker = new google.maps.Marker({
+    this._marker = new google.maps.Marker($.extend({
       position: this.get('position'),
       title: this.get('title'),
       visible: this.get('visible'),
       icon: this.get('icon'),
       shadow: this.get('shadow'),
-    });
+    }, this.get('markerOptions')));
     
     var that = this;
     google.maps.event.addListener(this._marker, 'dragend', function() {that._markerDragged()});
