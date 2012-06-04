@@ -5,18 +5,33 @@ GMap.Circle = SC.Object.extend({
 
   position: null,
   title: '',
-  visible: YES,
   positionObserver: function(key) {
     if (this._marker) {
       this._marker.setCenter(this.get('position'));
     }
   }.observes('position'),
 
+  isVisible: YES,
+
+  isVisibleObserver: function() {
+    if (this._marker) {
+      this._marker.setVisible(this.get('isVisible'));
+    }
+  }.observes('isVisible'),
+
+  isEditable: NO,
+  isEditableObserver: function() {
+    if (this._marker) {
+      this._marker.setEditable(this.get('isEditable'));
+    }
+  }.observes('isEditable'),
+
   init: function() {    
     this._marker = new google.maps.Circle({
       position: this.get('position'),
       title: this.get('title'),
-      visible: this.get('visible'),
+      visible: this.get('isVisible'),
+      editable: this.get('isEditable'),
       strokeColor: "#34c7d5",
       strokeOpacity: 0.8,
       strokeWeight: 2,
@@ -27,6 +42,10 @@ GMap.Circle = SC.Object.extend({
     });
     
     var that = this;
-    google.maps.event.addListener(this._marker, 'dragend', function() {that._markerDragged()});
+    google.maps.event.addListener(this._marker, 'center_changed', function() {that._markerDragged()});
+  },
+
+  _markerDragged: function() {
+    this.set('position', this._marker.getCenter());
   },
 })

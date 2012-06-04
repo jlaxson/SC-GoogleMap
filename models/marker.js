@@ -63,11 +63,11 @@ GMap.Marker = SC.Object.extend(
     this._marker.setDraggable(this.get('isEditable'));
   }.observes('isEditable'),
 
-  visible: YES,
+  isVisible: YES,
 
-  visibleObserver: function() {
-    this._marker.setVisible(this.get('visible'));
-  }.observes('visible'),
+  isVisibleObserver: function() {
+    this._marker.setVisible(this.get('isVisible'));
+  }.observes('isVisible'),
   
   init: function() {
     var iconURL = this.get('icon');
